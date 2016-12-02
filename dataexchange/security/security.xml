@@ -1,0 +1,16 @@
+<odoo>
+    <data>
+        <record model="ir.module.category" id="module_category_exchange">
+            <field name="name">Exchange</field>
+        </record>
+
+        <record id="dataexchange_manager" model="res.groups">
+            <field name="category_id" ref="module_category_exchange"/>
+            <field name="name">Data Exchange / Manager</field>
+        </record>
+        <record id="dataexchange_user" model="res.groups">
+            <field name="name">Data Exchange / User</field>
+            <field name="category_id" ref="module_category_exchange"/>
+        </record>
+    </data>
+</odoo>

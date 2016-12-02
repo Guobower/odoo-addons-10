@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_stream_run_tree">
+            <field name="name">stream.run.tree</field>
+            <field name="model">dataexchange.stream.run</field>
+            <field name="arch" type="xml">
+                <tree string="Liste des éxécutions de flux" decoration-danger="'err' in state" decoration-success="state=='integrated'">
+                    <field name="name"/>
+                    <field name="mode"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="total_record_count"/>
+                    <field name="state"/>
+                    <field name="retry_count"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_tree">
+            <field name="name">stream.tree</field>
+            <field name="model">dataexchange.stream</field>
+            <field name="arch" type="xml">
+                <tree string="Liste des flux disponibles">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="direction"/>
+                    <field name="endpoint"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_parameter_tree">
+            <field name="name">stream.parameter.tree</field>
+            <field name="model">dataexchange.stream.parameter</field>
+            <field name="arch" type="xml">
+                <tree string="Paramètres">
+                    <field name="name"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_data_tree">
+            <field name="name">stream.data.tree</field>
+            <field name="model">dataexchange.stream.data</field>
+            <field name="arch" type="xml">
+                <tree string="Enregistrements" decoration-danger="state=='error'" decoration-success="state=='integrated'">
+                    <field name="line_number"/>
+                    <field name="state"/>
+                    <field name="retry_count"/>
+                    <field name="data_1"/>
+                    <field name="data_2"/>
+                    <field name="data_3"/>
+                </tree>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_cr_tree">
+            <field name="name">stream.cr.tree</field>
+            <field name="model">dataexchange.stream.cr</field>
+            <field name="arch" type="xml">
+                <tree string="Compte-rendus">
+                    <field name="date_event"/>
+                    <field name="error_code"/>
+                    <field name="message"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_form">
+            <field name="name">stream.form</field>
+            <field name="model">dataexchange.stream</field>
+            <field name="arch" type="xml">
+                <form string="Flux">
+                    <header>
+                        <button name="run_manual" type="object" string="Lancer le flux"/>
+                        <button name="retry_all" type="object" string="Relancer les échecs"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                            <field name="basename"/>
+                            <field name="adapter"/>
+                            <field name="direction"/>
+                            <field name="endpoint"/>
+                            <field name="comment"/>
+                        </group>
+                        <notebook>
+                            <page string="Configuration">
+                                <group>
+                                    <field name="endpoint_data_path"/>
+                                    <field name="max_run_retry"/>
+                                    <field name="notification_email"/>
+                                </group>
+                            </page>
+                            <page string="Paramètres">
+                                <field name="param_ids"/>
+                            </page>
+                            <page string="Archivage">
+                                <group>
+                                    <field name="archive_mode"/>
+                                    <field name="archive_path"/>
+                                    <field name="archive_mask"/>
+                                </group>
+                            </page>
+                            <page string="Exécutions">
+                                <field name="run_ids"/>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_cr_form">
+            <field name="name">stream.cr.form</field>
+            <field name="model">dataexchange.stream.cr</field>
+            <field name="arch" type="xml">
+                <form string="Evènement">
+                    <sheet>
+                        <group>
+                            <field name="date_event"/>
+                            <field name="error_code"/>
+                            <field name="message"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stream_run_form">
+            <field name="name">stream.run.form</field>
+            <field name="model">dataexchange.stream.run</field>
+            <field name="arch" type="xml">
+                <form string="Exécution du flux">
+                    <header>
+                        <button name="retry" type="object" string="Relancer"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="mode"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="total_record_count"/>
+                            <field name="state"/>
+                        </group>
+                        <notebook>
+                            <page string="Enregistrements">
+                                <field name="data_record_ids"/>
+                            </page>
+                            <page string="Compte-rendus">
+                                <field name="cr_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--        <act_window name="Exécuter" res_model="dataexchange.stream.run" src_model="dataexchange.stream" view_mode="form" target="new" key2="client_action_multi" id="act_dataexchange_stream_run" multi="True"/>
+-->
+        <act_window id="act_dataexchange_stream_tree" name="Flux" res_model="dataexchange.stream" view_mode="tree,form" view_id="view_stream_tree"/>
+        <act_window id="act_dataexchange_stream_run_tree" name="Exécutions" res_model="dataexchange.stream.run" view_mode="tree,form"/>
+
+        <menuitem name="Echanges données" id="menu_dataexchange_root" sequence="100"/>
+
+        <menuitem name="Fichiers" id="menu_dataexchange_file" parent="menu_dataexchange_root" sequence="1"/>
+
+        <menuitem name="Flux" id="menu_dataexchange_streams" parent="menu_dataexchange_file" sequence="10" action="act_dataexchange_stream_tree"/>
+        <menuitem name="Exécutions" id="menu_dataexchange_streams_run" parent="menu_dataexchange_file" sequence="20" action="act_dataexchange_stream_run_tree"/>
+
+    </data>
+</odoo>
