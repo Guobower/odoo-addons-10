@@ -4,13 +4,16 @@
             <field name="name">Exchange</field>
         </record>
 
-        <record id="dataexchange_manager" model="res.groups">
-            <field name="category_id" ref="module_category_exchange"/>
-            <field name="name">Data Exchange / Manager</field>
-        </record>
-        <record id="dataexchange_user" model="res.groups">
+        <record id="group_dataexchange_user" model="res.groups">
             <field name="name">Data Exchange / User</field>
             <field name="category_id" ref="module_category_exchange"/>
         </record>
+        
+        <record id="group_dataexchange_manager" model="res.groups">
+            <field name="category_id" ref="module_category_exchange"/>
+            <field name="name">Data Exchange / Manager</field>
+            <field name="implied_ids" eval="[(4, ref('dataexchange.group_dataexchange_user'))]"/>
+        </record>
+
     </data>
 </odoo>

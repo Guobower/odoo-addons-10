@@ -169,7 +169,10 @@
         <act_window id="act_dataexchange_stream_tree" name="Flux" res_model="dataexchange.stream" view_mode="tree,form" view_id="view_stream_tree"/>
         <act_window id="act_dataexchange_stream_run_tree" name="Exécutions" res_model="dataexchange.stream.run" view_mode="tree,form"/>
 
-        <menuitem name="Echanges données" id="menu_dataexchange_root" sequence="100"/>
+        <menuitem name="Echanges données" id="menu_dataexchange_root"
+          groups="group_dataexchange_manager,group_dataexchange_user"
+          web_icon="dataexchange,static/description/icon.png"
+          sequence="100"/>
 
         <menuitem name="Fichiers" id="menu_dataexchange_file" parent="menu_dataexchange_root" sequence="1"/>
 

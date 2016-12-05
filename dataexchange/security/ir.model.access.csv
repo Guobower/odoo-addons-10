@@ -1,11 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-stream_all_manager,Stream manager,model_dataexchange_stream,dataexchange_manager,1,1,1,1
-stream_run_all_manager,Run manager,model_dataexchange_stream_run,dataexchange_manager,1,1,1,1
-stream_data_manager,Data manager,model_dataexchange_stream_data,dataexchange_manager,1,1,1,1
-stream_cr_manager,CR Manager,model_dataexchange_stream_cr,dataexchange_manager,1,1,1,1
-stream_parameter_all_manager,Parameter manager,model_dataexchange_stream_parameter,dataexchange_manager,1,1,1,1
-stream_restricted_user,Stream user,model_dataexchange_stream,dataexchange_user,1,0,0,0
-stream_run_restricted_user,Run user,model_dataexchange_stream_run,dataexchange_user,1,0,0,0
-stream_data_restricted_user,Data user,model_dataexchange_stream_data,dataexchange_user,1,0,0,0
-stream_cr_restricted_user,CR user,model_dataexchange_stream_cr,dataexchange_user,1,0,0,0
-stream_parameter_restricted_user,Parameter user,model_dataexchange_stream_parameter,dataexchange_user,1,0,0,0
+stream_all_manager,Stream manager,model_dataexchange_stream,group_dataexchange_manager,1,1,1,1
+stream_run_all_manager,Run manager,model_dataexchange_stream_run,group_dataexchange_manager,1,1,1,1
+stream_data_manager,Data manager,model_dataexchange_stream_data,group_dataexchange_manager,1,1,1,1
+stream_cr_manager,CR Manager,model_dataexchange_stream_cr,group_dataexchange_manager,1,1,1,1
+stream_parameter_all_manager,Parameter manager,model_dataexchange_stream_parameter,group_dataexchange_manager,1,1,1,1
+stream_restricted_user,Stream user,model_dataexchange_stream,group_dataexchange_user,1,0,0,0
+stream_run_restricted_user,Run user,model_dataexchange_stream_run,group_dataexchange_user,1,0,0,0
+stream_data_restricted_user,Data user,model_dataexchange_stream_data,group_dataexchange_user,1,0,0,0
+stream_cr_restricted_user,CR user,model_dataexchange_stream_cr,group_dataexchange_user,1,0,0,0
+stream_parameter_restricted_user,Parameter user,model_dataexchange_stream_parameter,group_dataexchange_user,1,0,0,0
