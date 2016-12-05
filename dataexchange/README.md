@@ -9,6 +9,10 @@ Adapters could be provided by inheritance et package using odoo modules.
 
 Suggestions & Feedback to: lionel.deglise@e-cosi.com
 
+Models
+------
+![Models UML](http://g.gravizo.com/source?https%3A%2F%2Fraw.githubusercontent.com%2Fe-COSI%2Fodoo-addons%2F10.0%2Fdataexchange%2Fdoc%2Fdataexchange.puml)
+
 Requirements
 ------------
 
