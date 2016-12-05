@@ -15,8 +15,6 @@ import shutil
 import csv
 
 
-import pudb
-
 _logger = logging.getLogger(__name__)
 _importers = {}
 _exporters = {}
@@ -111,7 +109,6 @@ class Importer(Adapter):
         return True
 
     def _archiveFile(self, input_file, path, mask, date):
-        pu.db
         if not path:
             path = ""
 
@@ -126,7 +123,6 @@ class Importer(Adapter):
         os.remove(input_file)
 
     def _renameFile(self, input_file, mask, date):
-        pu.db
         if not mask:
             mask = "%Y%m%d"
 
@@ -135,7 +131,6 @@ class Importer(Adapter):
             os.path.dirname(input_file), os.path.filename))
 
     def _deleteFile(self, input_file):
-        pu.db
         os.remove(input_file)
 
 
