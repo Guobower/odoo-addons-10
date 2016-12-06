@@ -20,6 +20,9 @@ _importers = {}
 _exporters = {}
 
 RUN_ERR_ARCHIVE = "21"
+RUN_ERR_ADAPTER_NOT_FOUND = "22"
+RUN_ERR_ENDPOINT_INVALID = "23"
+RUN_ERR_UNKNOWN_DIRECTION = "24"
 
 
 def registerImporter(code, importer):
@@ -186,6 +189,11 @@ class StreamRun(models.Model):
     cr_ids = fields.One2many(
         "dataexchange.stream.cr", "run_id", string="Compte-rendus")
 
+    def end(self, status=None):
+        self.end_date = datetime.datetime.now()
+        if status:
+            self.state = status
+
     @api.model
     def addLogSuccess(self, message):
         _logger.info(message)
@@ -218,11 +226,13 @@ class StreamRun(models.Model):
     def retry(self, mode):
         if self.state != 'integrated':
             importer = self.stream_id._get_importer()
-            self.retry_count += 1
 
             if not importer:
-                _logger.error("No importer found for code: %s", self.adapter)
+                self.addLogError("No importer found for code: %s" %
+                                 self.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
                 return False
+
+            self.retry_count += 1
 
             if importer.integrate(self):
                 _logger.info("Integration retry #%i for %s succeded",
@@ -299,6 +309,9 @@ class Stream(models.Model):
 
     archive_mask = fields.Char(size=20, String="Masque d'archivage")
 
+    def _ensure_endpoint_is_valid(self):
+        return os.path.isfile(self.endpoint_data_path)
+
     @api.multi
     def retry_all(self):
         for record in self:
@@ -344,6 +357,12 @@ class Stream(models.Model):
     @api.one
     def _run(self, mode):
         run = self._initRun(mode)
+        if not self._ensure_endpoint_is_valid():
+            run.addLogError('Invalid endpoint file %s' %
+                            self.endpoint_data_path, RUN_ERR_ENDPOINT_INVALID)
+            run.end('load_err')
+            return False
+
         run_result = None
 
         if self.direction == 'in':
@@ -351,12 +370,13 @@ class Stream(models.Model):
         elif direction == 'out':
             run_result = self._runExport(run)
         else:
-            _logger.error("Invalid stream direction: %s", direction)
+            run.addLogError('Invalid endpoint file %s' %
+                            direction, RUN_ERR_UNKNOWN_DIRECTION)
+            run.end('load_err')
             return False
 
-        run.end_date = datetime.datetime.now()
         if run_result:
-            _logger.info("Stream run [%s] success", run.name)
+            run.end()
             return True
         else:
             return False
@@ -369,7 +389,7 @@ class Stream(models.Model):
         requested_run = self.env['dataexchange.stream.run'].create({'name': run_name,
                                                                     'state': 'initiated',
                                                                     'mode': mode,
-                                                                    'retry_count': 0,
+                                                                    'retry_count': 1,
                                                                     'start_date': run_start_date,
                                                                     'stream_id': self.id})
 
@@ -382,7 +402,8 @@ class Stream(models.Model):
         importer = self._get_importer()
 
         if not importer:
-            _logger.error("No importer found for code: %s", self.adapter)
+            run.addLogError("No importer found for code: %s" %
+                            self.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
             return False
 
         if importer.load(run):
@@ -468,14 +489,14 @@ class StreamData(models.Model):
                               ("error", "En erreur")],
                              required=True, default="loaded", string="Statut")
 
-    retry_count = fields.Integer(default=0, required=True, string="Nombre de traitements",
-                                 help="Nombre de tentatives d'insertion dans la base métier (abandon à partir de 3).")
+    retry_count = fields.Integer(default=0, required=True, string="Nombre d'exécutions",
+                                 help="Nombre de tentatives d'exécution du flux.")
     cr_ids = fields.One2many(
         "dataexchange.stream.cr", "data_id", string="Compte-rendus")
 
     @api.model
     def addLogSuccess(self, message):
-        _logger.info(message)
+        _logger.info(unicode(message, "utf-8"))
         self.env['dataexchange.stream.cr'].create({'message': message,
                                                    'data_id': self.id})
 
