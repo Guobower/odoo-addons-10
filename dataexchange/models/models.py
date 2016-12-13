@@ -35,6 +35,15 @@ def registerExporter(code, exporter):
     _logger.info("Exporter %s added", code)
 
 
+class SearchError(Exception):
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class Adapter():
 
     def _get_param(self, run, paramName, defaultValue):
@@ -45,10 +54,14 @@ class Adapter():
         else:
             return defaultValue
 
-    def _search_by_name(self, run, model_name, name, col='name'):
-        record = run.env[model_name].search([(col, '=', name)])
-        if record:
+    def _search_by_name(self, run, model_name, name, col='name', case_sensitive=False):
+        record = run.env[model_name].search(
+            [(col, '=ilike' if case_sensitive else "=", name)])
+        if len(record) == 1:
             return record.id
+        elif len(record) > 1:
+            raise SearchError(
+                'Many found: Model [%s], col [%s], value[%s]' % (model_name, col, name))
         else:
             return 0
 
@@ -57,14 +70,14 @@ class Exporter(Adapter):
 
     def unload(self, run):
         _logger.debug("Start unloading for RUN: %s", run.name)
-        return self._unload(run, filename)
+        return self._unload(run)
 
     def _unload(self, run):
         return True
 
     def export(self, run):
         filename = run.stream_id.endpoint_data_path
-        _logger.debug("Start exporting to file: %s", filename)
+        _logger.info("Start exporting to file: %s", filename)
         data_to_export_ids = run.data_record_ids.filtered(
             lambda x: x.state != 'exported')
         return self._export(run, data_to_export_ids)
@@ -77,6 +90,7 @@ class Importer(Adapter):
 
     def load(self, run):
         filename = run.stream_id.endpoint_data_path
+
         _logger.debug("Start loading file: %s", filename)
         return self._load(run, filename)
 
@@ -209,7 +223,7 @@ class StreamRun(models.Model):
 
     @api.model
     def addLogInfo(self, message):
-        _logger.debug(message)
+        _logger.info(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
                                                    'run_id': self.id})
 
@@ -357,17 +371,16 @@ class Stream(models.Model):
     @api.one
     def _run(self, mode):
         run = self._initRun(mode)
-        if not self._ensure_endpoint_is_valid():
-            run.addLogError('Invalid endpoint file %s' %
-                            self.endpoint_data_path, RUN_ERR_ENDPOINT_INVALID)
-            run.end('load_err')
-            return False
-
         run_result = None
 
         if self.direction == 'in':
+            if not self._ensure_endpoint_is_valid():
+                run.addLogError('Invalid endpoint file %s' %
+                                self.endpoint_data_path, RUN_ERR_ENDPOINT_INVALID)
+                run.end('load_err')
+                return False
             run_result = self._runImport(run)
-        elif direction == 'out':
+        elif self.direction == 'out':
             run_result = self._runExport(run)
         else:
             run.addLogError('Invalid endpoint file %s' %
@@ -426,9 +439,10 @@ class Stream(models.Model):
             _logger.error("No exporter found for code: %s", self.adapter)
             return False
 
-        if exporter.export(run):
-            return True
+        if exporter.unload(run):
+            return True if exporter.export(run) else False
 
+        _logger.error("Export %s failed", run.name)
         return False
 
 
