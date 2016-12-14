@@ -58,7 +58,7 @@ class Adapter():
         else:
             return 0
 
-    def prepare(self, env):
+    def prepare(self, env, stream):
         return True
 
 
