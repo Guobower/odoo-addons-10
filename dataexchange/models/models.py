@@ -174,6 +174,7 @@ class StreamRun(models.Model):
         [("initiated", "En cours"),
          ("loaded", "Chargé"),
          ("load_err", "Chargement échoué"),
+         ("partial", "Partiellement intégré"),
          ("integrated", "Intégré"),
          ("integration_err", "Intégration échouée"),
          ], default="initiated", required=True)
@@ -510,13 +511,13 @@ class StreamData(models.Model):
 
     @api.model
     def addLogSuccess(self, message):
-        _logger.info(unicode(message, "utf-8"))
+        _logger.info(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
                                                    'data_id': self.id})
 
     @api.model
     def addLogError(self, message, code):
-        _logger.warning(code + ":" + message)
+        _logger.warning("Code [" + code + "] :" + message)
         self.env['dataexchange.stream.cr'].create({'error_code': code,
                                                    'message': message,
                                                    'data_id': self.id})
