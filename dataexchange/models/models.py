@@ -46,16 +46,9 @@ class SearchError(Exception):
 
 class Adapter():
 
-    def _get_param(self, run, paramName, defaultValue):
-        recordSet = run.stream_id.param_ids.filtered(
-            lambda r: r.name == paramName)
-        if recordSet:
-            return recordSet[0].value
-        else:
-            return defaultValue
-
-    def _search_by_name(self, run, model_name, name, col='name', case_sensitive=False):
-        record = run.env[model_name].search(
+    def _search_by_name(self, env, model_name, name, col='name', case_sensitive=False):
+        # FIXME: problem with i18n
+        record = env[model_name].with_context(lang="fr_FR").sudo().search(
             [(col, '=ilike' if case_sensitive else "=", name)])
         if len(record) == 1:
             return record.id
@@ -65,10 +58,14 @@ class Adapter():
         else:
             return 0
 
+    def prepare(self, env):
+        return True
+
 
 class Exporter(Adapter):
 
-    def unload(self, run):
+    def unload(self, run
+               ):
         _logger.debug("Start unloading for RUN: %s", run.name)
         return self._unload(run)
 
@@ -209,20 +206,17 @@ class StreamRun(models.Model):
         if status:
             self.state = status
 
-    @api.model
     def addLogSuccess(self, message):
         _logger.info(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
                                                    'run_id': self.id})
 
-    @api.model
     def addLogError(self, message, code):
         _logger.warning(code + ":" + message)
         self.env['dataexchange.stream.cr'].create({'error_code': code,
                                                    'message': message,
                                                    'run_id': self.id})
 
-    @api.model
     def addLogInfo(self, message):
         _logger.info(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
@@ -249,6 +243,7 @@ class StreamRun(models.Model):
 
             self.retry_count += 1
 
+            importer.prepare(self.env, self.stream_id)
             if importer.integrate(self):
                 _logger.info("Integration retry #%i for %s succeded",
                              self.retry_count, self.name)
@@ -324,6 +319,14 @@ class Stream(models.Model):
 
     archive_mask = fields.Char(size=20, String="Masque d'archivage")
 
+    def get_param(self, paramName, defaultValue):
+        recordSet = self.param_ids.filtered(
+            lambda r: r.name == paramName)
+        if recordSet:
+            return recordSet[0].value
+        else:
+            return defaultValue
+
     def _ensure_endpoint_is_valid(self):
         return os.path.isfile(self.endpoint_data_path)
 
@@ -348,7 +351,7 @@ class Stream(models.Model):
         for record in self:
             record._run('manual')
 
-    @api.model
+    @api.multi
     def run_auto(self):
         for record in self:
             record._run('auto')
@@ -357,7 +360,7 @@ class Stream(models.Model):
     def recycle_previous(self, mode):
         self._retry(mode)
 
-    @api.model
+    @api.one
     def run_auto_and_recycle_previous(self):
         self._run('auto')
         self._retry('auto')
@@ -369,7 +372,6 @@ class Stream(models.Model):
         for run in error_run_ids:
             run.retry(mode)
 
-    @api.one
     def _run(self, mode):
         run = self._initRun(mode)
         run_result = None
@@ -419,6 +421,8 @@ class Stream(models.Model):
             run.addLogError("No importer found for code: %s" %
                             self.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
             return False
+
+        importer.prepare(run.env, self)
 
         if importer.load(run):
             success = True if importer.integrate(run) else False
@@ -509,20 +513,17 @@ class StreamData(models.Model):
     cr_ids = fields.One2many(
         "dataexchange.stream.cr", "data_id", string="Compte-rendus")
 
-    @api.model
     def addLogSuccess(self, message):
         _logger.info(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
                                                    'data_id': self.id})
 
-    @api.model
     def addLogError(self, message, code):
         _logger.warning("Code [" + code + "] :" + message)
         self.env['dataexchange.stream.cr'].create({'error_code': code,
                                                    'message': message,
                                                    'data_id': self.id})
 
-    @api.model
     def addLogInfo(self, message):
         _logger.debug(message)
         self.env['dataexchange.stream.cr'].create({'message': message,
