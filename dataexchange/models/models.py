@@ -444,6 +444,8 @@ class Stream(models.Model):
             _logger.error("No exporter found for code: %s", self.adapter)
             return False
 
+        exporter.prepare(run.env, self)
+
         if exporter.unload(run):
             return True if exporter.export(run) else False
 
