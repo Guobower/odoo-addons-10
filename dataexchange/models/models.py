@@ -64,12 +64,11 @@ class Adapter():
 
 class Exporter(Adapter):
 
-    def unload(self, run
-               ):
-        _logger.debug("Start unloading for RUN: %s", run.name)
-        return self._unload(run)
+    def extract(self, run):
+        _logger.debug("Starting extraction for RUN: %s", run.name)
+        return self._extract(run)
 
-    def _unload(self, run):
+    def _extract(self, run):
         return True
 
     def export(self, run):
@@ -97,7 +96,7 @@ class Importer(Adapter):
     def integrate(self, run):
         _logger.debug("Start integration for RUN: %s", run.name)
         data_to_integrate_ids = run.data_record_ids.filtered(
-            lambda x: x.state != 'integrated')
+            lambda x: x.state != 'processed')
         return self._integrate(run, data_to_integrate_ids)
 
     def _integrate(self, run, data_to_integrate_ids):
@@ -170,10 +169,16 @@ class StreamRun(models.Model):
     state = fields.Selection(
         [("initiated", "En cours"),
          ("loaded", "Chargé"),
+         ("extracted", "Extrait"),
+         ("extract_err", "Extraction échouée"),
          ("load_err", "Chargement échoué"),
-         ("partial", "Partiellement intégré"),
+         ("partial", "Traitement partiel"),
          ("integrated", "Intégré"),
          ("integration_err", "Intégration échouée"),
+         ("exported", "Exporté"),
+         ("export_err", "Exportation échouée"),
+         ("global_err", "Erreur générale"),
+         ("param_err", "Erreur de paramétrage")
          ], default="initiated", required=True)
 
     start_date = fields.Datetime(
@@ -386,13 +391,13 @@ class Stream(models.Model):
         elif self.direction == 'out':
             run_result = self._runExport(run)
         else:
-            run.addLogError('Invalid endpoint file %s' %
+            run.addLogError('Unknown direction : %s' %
                             direction, RUN_ERR_UNKNOWN_DIRECTION)
-            run.end('load_err')
+            run.end('global_err')
             return False
 
         if run_result:
-            run.end()
+            run.end('integrated' if self.direction == 'in' else 'exported')
             return True
         else:
             return False
@@ -446,11 +451,10 @@ class Stream(models.Model):
 
         exporter.prepare(run.env, self)
 
-        if exporter.unload(run):
-            return True if exporter.export(run) else False
-
-        _logger.error("Export %s failed", run.name)
-        return False
+        if exporter.extract(run):
+            return exporter.export(run)
+        else:
+            return False
 
 
 class StreamParameter(models.Model):
@@ -505,10 +509,10 @@ class StreamData(models.Model):
     data_29 = fields.Char(size=250, string="Champ 29")
     data_30 = fields.Char(size=250, string="Champ 30")
 
-    state = fields.Selection([("loaded", "Chargé, non traité"),
-                              ("integrated", "Traité avec succès"),
+    state = fields.Selection([("created", "Créé, non traité"),
+                              ("processed", "Traité avec succès"),
                               ("error", "En erreur")],
-                             required=True, default="loaded", string="Statut")
+                             required=True, default="created", string="Statut")
 
     retry_count = fields.Integer(default=0, required=True, string="Nombre d'exécutions",
                                  help="Nombre de tentatives d'exécution du flux.")
