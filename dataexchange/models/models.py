@@ -5,7 +5,6 @@ from odoo.exceptions import UserError
 import logging
 import time
 import datetime
-import convert
 
 import sys
 import subprocess
