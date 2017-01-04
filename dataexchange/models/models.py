@@ -105,7 +105,7 @@ class Importer(Adapter):
         input_file = run.stream_id.endpoint_data_path
 
         try:
-            if run.stream_id.archive_mode == 'archive':
+            if run.stream_id.archive_mode == 'separate':
                 self._archiveFile(
                     input_file, run.stream_id.archive_path, run.stream_id.archive_mask, run.start_date)
             elif run.stream_id.archive_mode == 'delete':
@@ -124,26 +124,47 @@ class Importer(Adapter):
         if not path:
             path = ""
 
-        if not os.path.isdir(path):
-            os.mkdirs(path)
+        try:
+            if not os.path.isdir(path):
+                os.makedirs(path)
 
-        if not mask:
-            mask = "%Y%m%d"
+            if not mask:
+                mask = "%Y%m%d"
 
-        filename = os.path.basename(input_file) + "_" + date.strftime(mask)
-        shutil.copy2(os.path.join(path, filename))
-        os.remove(input_file)
+            # FIXME: use date instead of now() but date is String
+            filename, file_extension = os.path.splitext(os.path.basename(
+                input_file))
+            new_filename = filename + "_" + datetime.datetime.now().strftime(mask) + \
+                file_extension
+
+            shutil.copy2(input_file, os.path.join(path, new_filename))
+            os.remove(input_file)
+        except:
+            self.addLogError(
+                RUN_ERR_ARCHIVE, "Impossible d'archiver le fichier %s" % input_file)
 
     def _renameFile(self, input_file, mask, date):
         if not mask:
             mask = "%Y%m%d"
 
-        filename = os.path.basename(input_file) + "_" + date.strftime(mask)
-        os.rename(input_file, os.path.join(
-            os.path.dirname(input_file), os.path.filename))
+        # FIXME: use date instead of now() but date is String
+        filename, file_extension = os.path.splitext(os.path.basename(
+            input_file))
+        new_filename = filename + "_" + datetime.datetime.now().strftime(mask) + \
+            file_extension
+        try:
+            os.rename(input_file, os.path.join(
+                os.path.dirname(input_file), new_filename))
+        except:
+            self.addLogError(
+                RUN_ERR_ARCHIVE, "Impossible de renommer le fichier %s " % input_file)
 
     def _deleteFile(self, input_file):
-        os.remove(input_file)
+        try:
+            os.remove(input_file)
+        except:
+            self.addLogError(
+                RUN_ERR_ARCHIVE, "Impossible de supprimer le fichier %s" % input_file)
 
 
 class StreamRun(models.Model):
@@ -237,12 +258,18 @@ class StreamRun(models.Model):
 
     @api.one
     def retry(self, mode):
+        if (self.stream_id.direction == 'in'):
+            self._retryImport(mode)
+        else:
+            self._retryExport(mode)
+
+    def _retryImport(self, mode):
         if self.state != 'integrated':
             importer = self.stream_id._get_importer()
 
             if not importer:
                 self.addLogError("No importer found for code: %s" %
-                                 self.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
+                                 self.stream_id.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
                 return False
 
             self.retry_count += 1
@@ -257,6 +284,10 @@ class StreamRun(models.Model):
             return False
         else:
             return True
+
+    def _retryExport(self, mode):
+        # TODO: export retry : what to do ?
+        return True
 
 
 class Stream(models.Model):
