@@ -23,7 +23,7 @@
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Exchange',
-    'version': '1.1.0',
+    'version': '1.2.0',
     'licence': 'AGPL-3',
 
     # any module necessary for this one to work correctly
