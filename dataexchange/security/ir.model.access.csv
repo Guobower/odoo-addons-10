@@ -1,9 +1,14 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-stream_all_manager,Stream manager,model_dataexchange_stream,group_dataexchange_manager,1,1,1,1
-stream_run_all_manager,Run manager,model_dataexchange_stream_run,group_dataexchange_manager,1,1,1,1
-stream_data_manager,Data manager,model_dataexchange_stream_data,group_dataexchange_manager,1,1,1,1
-stream_cr_manager,CR Manager,model_dataexchange_stream_cr,group_dataexchange_manager,1,1,1,1
-stream_parameter_all_manager,Parameter manager,model_dataexchange_stream_parameter,group_dataexchange_manager,1,1,1,1
+stream_admin_flux,Stream admin,model_dataexchange_stream,group_dataexchange_admin,1,1,1,1
+stream_run_admin_flux,Run admin,model_dataexchange_stream_run,group_dataexchange_admin,1,1,1,1
+stream_data_admin_flux,Data admin,model_dataexchange_stream_data,group_dataexchange_admin,1,1,1,1
+stream_cr_admin_flux,CR Admin,model_dataexchange_stream_cr,group_dataexchange_admin,1,1,1,1
+stream_parameter_admin_flux,Parameter admin,model_dataexchange_stream_parameter,group_dataexchange_admin,1,1,1,1
+stream_all_manager,Stream manager,model_dataexchange_stream,group_dataexchange_manager,1,1,1,0
+stream_run_all_manager,Run manager,model_dataexchange_stream_run,group_dataexchange_manager,1,1,1,0
+stream_data_manager,Data manager,model_dataexchange_stream_data,group_dataexchange_manager,1,1,1,0
+stream_cr_manager,CR Manager,model_dataexchange_stream_cr,group_dataexchange_manager,1,1,1,0
+stream_parameter_all_manager,Parameter manager,model_dataexchange_stream_parameter,group_dataexchange_manager,1,1,1,0
 stream_restricted_user,Stream user,model_dataexchange_stream,group_dataexchange_user,1,0,0,0
 stream_run_restricted_user,Run user,model_dataexchange_stream_run,group_dataexchange_user,1,0,0,0
 stream_data_restricted_user,Data user,model_dataexchange_stream_data,group_dataexchange_user,1,0,0,0
