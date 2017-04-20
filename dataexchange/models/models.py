@@ -22,6 +22,7 @@ RUN_ERR_ARCHIVE = "21"
 RUN_ERR_ADAPTER_NOT_FOUND = "22"
 RUN_ERR_ENDPOINT_INVALID = "23"
 RUN_ERR_UNKNOWN_DIRECTION = "24"
+RUN_ERR_DUPLICATE_ENTRY = "25"
 
 
 def registerImporter(code, importer):
@@ -96,6 +97,8 @@ class Importer(Adapter):
         _logger.debug("Start integration for RUN: %s", run.name)
         data_to_integrate_ids = run.data_record_ids.filtered(
             lambda x: x.state != 'processed')
+        if run.stream_id.filter_duplicates:
+            self._filter_duplicates(run, data_to_integrate_ids)
         return self._integrate(run, data_to_integrate_ids)
 
     def _integrate(self, run, data_to_integrate_ids):
@@ -165,6 +168,28 @@ class Importer(Adapter):
         except:
             self.addLogError(
                 RUN_ERR_ARCHIVE, "Impossible de supprimer le fichier %s" % input_file)
+
+    def _filter_duplicates(self, run, data_to_integrate_ids):
+        """
+        Filter out every document processed by the importer has already been treated
+        by a precedent run.
+        To enable this feature the `filter_duplicates` field must be set to true in
+        the Stream instance and every stream data must specify store a unique identifier
+        in every StreamData's `document_id` field.
+        """
+        duplicate_ids = []
+        for record in data_to_integrate_ids:
+            for stream_run in run.stream_id.run_ids:
+                if run.id != stream_run.id:
+                    for data_record in stream_run.data_record_ids:
+                        if record.document_id == data_record.document_id:
+                            err_msg = "Duplicate entry {0} already treated in run {}" \
+                                .format(record.document_id, stream_run.name)
+                            self.addLogError(RUN_ERR_DUPLICATE_ENTRY, err_msg)
+                            duplicate_ids.append(record.id)
+        deduplicated_data = [data for data in data_to_integrate_ids if data.id not in duplicate_ids]
+        # TODO: test this feature with a valid dataset
+        return deduplicated_data
 
 
 class StreamRun(models.Model):
@@ -349,10 +374,13 @@ class Stream(models.Model):
     archive_path = fields.Char(size=100, string="Chemin d'archives")
 
     archive_mode = fields.Selection(
-        [("none", "Aucun"), ("rename", "Dans le répertoire"), ("separate", "Dans un autre répertoire"),
+        [("none", "Aucun"), ("rename", "Dans le répertoire"),
+         ("separate", "Dans un autre répertoire"),
          ("delete", "Supprimer")], default="rename", required=True)
 
     archive_mask = fields.Char(size=20, String="Masque d'archivage")
+
+    filter_duplicates = fields.Boolean(default=False)
 
     def get_param(self, paramName, defaultValue):
         recordSet = self.param_ids.filtered(
@@ -507,6 +535,8 @@ class StreamData(models.Model):
         "dataexchange.stream.run", ondelete="cascade", required=True, string="Exécution du flux")
     # TODO: Why ?
     line_number = fields.Integer(required=True, string="Numéro")
+
+    document_id = fields.Char(size=250)
 
     data_1 = fields.Char(size=250, string="Champ 1")
     data_2 = fields.Char(size=250, string="Champ 2")

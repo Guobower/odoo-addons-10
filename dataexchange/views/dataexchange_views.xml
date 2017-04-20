@@ -83,16 +83,19 @@
                     </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="code" groups="dataexchange.group_dataexchange_manager"/>
-                            <field name="description"/>
-                            <field name="comment"/>
-                        </group>
-                        <group groups="dataexchange.group_dataexchange_manager">
-                            <field name="basename"/>
-                            <field name="adapter"/>
-                            <field name="direction"/>
-                            <field name="endpoint"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="code" groups="dataexchange.group_dataexchange_manager"/>
+                                <field name="description"/>
+                                <field name="comment"/>
+                            </group>
+                            <group groups="dataexchange.group_dataexchange_manager">
+                                <field name="basename"/>
+                                <field name="adapter"/>
+                                <field name="direction"/>
+                                <field name="endpoint"/>
+                                <field name="filter_duplicates"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Exécutions">
