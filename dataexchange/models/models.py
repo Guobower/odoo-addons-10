@@ -195,6 +195,7 @@ class Importer(Adapter):
 class StreamRun(models.Model):
     _name = "dataexchange.stream.run"
     _description = "Stream run model"
+    _order = "start_date DESC"
 
     name = fields.Char(
         required=True,
