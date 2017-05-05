@@ -90,7 +90,7 @@ class Importer(Adapter):
         _logger.debug("Start loading file: %s", filename)
         return self._load(run, filename)
 
-    def _load(self, run):
+    def _load(self, run, filename):
         return True
 
     def integrate(self, run):
@@ -98,7 +98,7 @@ class Importer(Adapter):
         data_to_integrate_ids = run.data_record_ids.filtered(
             lambda x: x.state != 'processed')
         if run.stream_id.filter_duplicates:
-            self._filter_duplicates(run, data_to_integrate_ids)
+            data_to_integrate_ids = self._filter_duplicates(run, data_to_integrate_ids)
         return self._integrate(run, data_to_integrate_ids)
 
     def _integrate(self, run, data_to_integrate_ids):
@@ -169,6 +169,19 @@ class Importer(Adapter):
             self.addLogError(
                 RUN_ERR_ARCHIVE, "Impossible de supprimer le fichier %s" % input_file)
 
+    def _check_duplicate(self, run, record):
+        for stream_run in run.stream_id.run_ids:
+            if run.id != stream_run.id:
+                for data_record in stream_run.data_record_ids:
+                    if record.document_id == data_record.document_id and data_record.state == "processed":
+                        err_msg = "Duplicate entry {0} already treated in run {1}".format(
+                            record.document_id, stream_run.name
+                        )
+                        #self.addLogError(RUN_ERR_DUPLICATE_ENTRY, err_msg)
+                        _logger.error(err_msg)
+                        return record.id
+        return False
+
     def _filter_duplicates(self, run, data_to_integrate_ids):
         """
         Filter out every document processed by the importer has already been treated
@@ -179,14 +192,9 @@ class Importer(Adapter):
         """
         duplicate_ids = []
         for record in data_to_integrate_ids:
-            for stream_run in run.stream_id.run_ids:
-                if run.id != stream_run.id:
-                    for data_record in stream_run.data_record_ids:
-                        if record.document_id == data_record.document_id:
-                            err_msg = "Duplicate entry {0} already treated in run {}" \
-                                .format(record.document_id, stream_run.name)
-                            self.addLogError(RUN_ERR_DUPLICATE_ENTRY, err_msg)
-                            duplicate_ids.append(record.id)
+            duplicate_id = self._check_duplicate(run, record)
+            if duplicate_id:
+                duplicate_ids.append(duplicate_id)
         deduplicated_data = [data for data in data_to_integrate_ids if data.id not in duplicate_ids]
         # TODO: test this feature with a valid dataset
         return deduplicated_data
@@ -225,7 +233,7 @@ class StreamRun(models.Model):
          ("export_err", "Exportation échouée"),
          ("global_err", "Erreur générale"),
          ("param_err", "Erreur de paramétrage")
-         ], default="initiated", required=True)
+        ], default="initiated", required=True)
 
     start_date = fields.Datetime(
         required=True,
@@ -451,7 +459,7 @@ class Stream(models.Model):
             run_result = self._runExport(run)
         else:
             run.addLogError('Unknown direction : %s' %
-                            direction, RUN_ERR_UNKNOWN_DIRECTION)
+                            self.direction, RUN_ERR_UNKNOWN_DIRECTION)
             run.end('global_err')
             return False
 
