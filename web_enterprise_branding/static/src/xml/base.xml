@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-extend="AppSwitcher.Content">
+        <!-- overload app_siwtcher background-->
+        <t t-jquery=".o_application_switcher_footer" t-operation="inner">
+            <img src="/web_enterprise_branding/static/src/img/logo_footer.png" />
+        </t>
+
+        <!-- replace o_caption class by o_caption_brand-->
+        <t t-jquery=".o_caption">
+            this.addClass('o_caption_brand');
+        </t>
+    </t>
+
+    <!-- Add o_application_switcher_brand class to AppSwitcher-->
+    <t t-extend="AppSwitcher">
+        <t t-jquery="div">
+            this.parent().addClass('o_application_switcher_brand');
+	</t>
+    </t>
+</templates>

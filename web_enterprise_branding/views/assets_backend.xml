@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Add new _brand CSS classes to app_switcher -->
+    <template id="assets_backend" name="SCAM assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/less" href="/web_enterprise_branding/static/src/less/web_branding.less" />
+        </xpath>
+    </template>
+
+    <!-- Overload web base Less variables to modifify theme colors
+        /!\ variables overloading must be added after web_enterprise variables using less_helpers.
+        Note: web_enterprise Less variables overload web variables by replacing theme.
+    -->
+    <template id="less_helpers" name="Branding less helpers" inherit_id="web.less_helpers">
+        <xpath expr="//link[@href='/web_enterprise/static/src/less/variables.less']" position="after">
+            <link rel="stylesheet" type="text/less" href="/web_enterprise_branding/static/src/less/variables.less" />
+        </xpath>
+    </template>
+</odoo>
