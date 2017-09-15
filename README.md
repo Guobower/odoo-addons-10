@@ -22,8 +22,8 @@ For easy use, images must be replaced with the same name.
 | --- | --- | --- |
 | App switch footer logo | static/src/img/logo_footer.png | The logo in the footer of application switcher |
 | App switcher background | static/src/img/brand-bg.jpg | Background image for applications switcher |
-| App switcher caption style | static/src/lass/web_branding.less | div.o_caption.o_caption_brand
-| Colors, fonts and other | static/src/lass/variables.less | You can override any var of default theme in this file |
+| App switcher caption style | static/src/less/web_branding.less | div.o_caption.o_caption_brand
+| Colors, fonts and other | static/src/less/variables.less | You can override any var of default theme in this file |
 
 Note : it could be used to customize a specific environnement eg: testing of everything else !
 
