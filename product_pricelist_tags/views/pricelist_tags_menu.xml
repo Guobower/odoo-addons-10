@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<record id="action_pricelists" model="ir.actions.act_window">
+    <field name="name">Pricelists</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">product.pricelist</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">kanban,tree,form</field>
+    <field name="search_view_id" ref="product.product_pricelist_view_search"/>
+    <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+        Click to add a new pricelist.
+        </p>
+    </field>
+</record>
+<record id="action_pricelists_view_kanban" model="ir.actions.act_window.view">
+    <field name="sequence" eval="0"/>
+    <field name="view_mode">kanban</field>
+    <field name="view_id" ref="product.product_pricelist_view_kanban"/>
+    <field name="act_window_id" ref="action_pricelists"/>
+</record>
+<record id="action_pricelists_view_tree" model="ir.actions.act_window.view">
+    <field name="sequence" eval="1"/>
+    <field name="view_mode">tree</field>
+    <field name="view_id" ref="product.product_pricelist_view_tree"/>
+    <field name="act_window_id" ref="action_pricelists"/>
+</record>
+<record id="action_pricelists_view_form" model="ir.actions.act_window.view">
+    <field name="sequence" eval="2"/>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="product.product_pricelist_view"/>
+    <field name="act_window_id" ref="action_pricelists"/>
+</record>
+
+<menuitem name="Pricelists"
+    id="menu_pricelists"
+    sequence="4"
+    web_icon="pricelists,static/description/icon.png"
+    groups="base.group_user,base.group_partner_manager"/>
+
+<menuitem id="product_pricelist_menu_pricelists"
+    name="Pricelists"
+    action="action_pricelists"
+    parent="menu_pricelists"
+    sequence="2"/>
+
+<menuitem id="product_pricelist_menu_config"
+    name="Configuration"
+    parent="menu_pricelists"
+    groups="base.group_system"
+    sequence="2"/>
+
+<menuitem id="menu_partner_category_form"
+    action="product_pricelist_tags.action_pricelist_category_form"
+    name="Pricelist Tags"
+    sequence="1" parent="product_pricelist_menu_config"/>
+
+</odoo>
