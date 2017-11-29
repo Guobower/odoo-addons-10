@@ -23,6 +23,6 @@
     # always loaded
     'data': [
         'views/product_pricelist.xml',
-        'views/pricelist_tag_views.xml',
+        'views/pricelist_tags_menu.xml',
     ],
 }
