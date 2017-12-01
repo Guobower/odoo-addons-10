@@ -48,7 +48,7 @@ msgstr "Créé le"
 #. module: product_pricelist_tags
 #: model:ir.model.fields,field_description:product_pricelist_tags.field_product_pricelist_category_display_name
 msgid "Display Name"
-msgstr "affichage nom"
+msgstr "Nom"
 
 #. module: product_pricelist_tags
 #: model:ir.model.fields,field_description:product_pricelist_tags.field_product_pricelist_category_id
