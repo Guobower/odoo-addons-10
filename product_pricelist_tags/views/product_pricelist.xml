@@ -4,8 +4,8 @@
 
 
 <!-- Product Pricelist Views -->
-<record id="product_pricelist_view_inherit_backend_event" model="ir.ui.view">
-    <field name="name">backend_event Product Pricelist view</field>
+<record id="product_pricelist_view_inherit_tags" model="ir.ui.view">
+    <field name="name">Product Pricelist Tags View</field>
     <field name="model">product.pricelist</field>
     <field name="inherit_id" ref="product.product_pricelist_view" />
     <field name="arch" type="xml">
@@ -13,6 +13,17 @@
             <field name="category_ids" widget="many2many_tags"
                 options="{'color_field': 'color', 'no_create_edit': True}" />
         </field>
+    </field>
+</record>
+<record id="product_pricelist_view_kanban_interit_tags" model="ir.ui.view">
+    <field name="name">Product Pricelist Tags Kanban</field>
+    <field name="model">product.pricelist</field>
+    <field name="inherit_id" ref="product.product_pricelist_view_kanban" />
+    <field name="arch" type="xml">
+        <div class="o_kanban_record_headings" position="inside">
+            <field name="category_ids" widget="many2many_tags"
+                options="{'color_field': 'color'}" />
+        </div>
     </field>
 </record>
 
