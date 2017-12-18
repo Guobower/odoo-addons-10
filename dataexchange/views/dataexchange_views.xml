@@ -83,16 +83,19 @@
                     </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="code" groups="dataexchange.group_dataexchange_manager"/>
-                            <field name="description"/>
-                            <field name="comment"/>
-                        </group>
-                        <group groups="dataexchange.group_dataexchange_manager">
-                            <field name="basename"/>
-                            <field name="adapter"/>
-                            <field name="direction"/>
-                            <field name="endpoint"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="code" groups="dataexchange.group_dataexchange_manager"/>
+                                <field name="description"/>
+                                <field name="comment"/>
+                            </group>
+                            <group groups="dataexchange.group_dataexchange_manager">
+                                <field name="basename"/>
+                                <field name="adapter"/>
+                                <field name="direction"/>
+                                <field name="endpoint"/>
+                                <field name="filter_duplicates"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Exécutions">
@@ -150,41 +153,43 @@
                         </group>
                         <notebook>
                             <page string="Données">
-                                <group>
-                                    <field name="data_1"/>
-                                    <field name="data_2"/>
-                                    <field name="data_3"/>
-                                    <field name="data_4"/>
-                                    <field name="data_5"/>
-                                    <field name="data_6"/>
-                                    <field name="data_7"/>
-                                    <field name="data_8"/>
-                                    <field name="data_9"/>
-                                    <field name="data_10"/>
-                                </group>
-                                <group>
-                                    <field name="data_11"/>
-                                    <field name="data_12"/>
-                                    <field name="data_13"/>
-                                    <field name="data_14"/>
-                                    <field name="data_15"/>
-                                    <field name="data_16"/>
-                                    <field name="data_17"/>
-                                    <field name="data_18"/>
-                                    <field name="data_19"/>
-                                    <field name="data_20"/>
-                                </group>
-                                <group>
-                                    <field name="data_21"/>
-                                    <field name="data_22"/>
-                                    <field name="data_23"/>
-                                    <field name="data_24"/>
-                                    <field name="data_25"/>
-                                    <field name="data_26"/>
-                                    <field name="data_27"/>
-                                    <field name="data_28"/>
-                                    <field name="data_29"/>
-                                    <field name="data_30"/>
+                                <group col="3" colspan="2">
+                                    <group>
+                                        <field name="data_1"/>
+                                        <field name="data_2"/>
+                                        <field name="data_3"/>
+                                        <field name="data_4"/>
+                                        <field name="data_5"/>
+                                        <field name="data_6"/>
+                                        <field name="data_7"/>
+                                        <field name="data_8"/>
+                                        <field name="data_9"/>
+                                        <field name="data_10"/>
+                                    </group>
+                                    <group>
+                                        <field name="data_11"/>
+                                        <field name="data_12"/>
+                                        <field name="data_13"/>
+                                        <field name="data_14"/>
+                                        <field name="data_15"/>
+                                        <field name="data_16"/>
+                                        <field name="data_17"/>
+                                        <field name="data_18"/>
+                                        <field name="data_19"/>
+                                        <field name="data_20"/>
+                                    </group>
+                                    <group>
+                                        <field name="data_21"/>
+                                        <field name="data_22"/>
+                                        <field name="data_23"/>
+                                        <field name="data_24"/>
+                                        <field name="data_25"/>
+                                        <field name="data_26"/>
+                                        <field name="data_27"/>
+                                        <field name="data_28"/>
+                                        <field name="data_29"/>
+                                        <field name="data_30"/>
+                                    </group>
                                 </group>
                             </page>
                             <page string="Compte-rendus">
