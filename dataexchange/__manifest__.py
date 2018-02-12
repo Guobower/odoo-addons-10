@@ -6,15 +6,29 @@
         Manage and operate import and export streams""",
 
     'description': """
-        Manage and operate import and export streams.
+***********************
+Manage and operate import and export streams.
+***********************
 
-        Streams use adapters to acquire or output data in native format. Datas
-        are stored in an intermediate model permitting to follow treatments and
-        retry failures.
+Summary
+=======
+Streams use adapters to acquire or output data in native format. Datas
+are stored in an intermediate model permitting to follow treatments and
+retry failures.
 
-        Adapters could be provide by inheritance et package using odoo modules.
+Adapters could be provide by inheritance et package using odoo modules.
 
-        Suggestions & Feedback to: lionel.deglise@e-cosi.com""",
+Suggestions & Feedback to: lionel.deglise@e-cosi.com
+
+Changelog
+=========
+
+v10.0.1.2.1
+-----------
+- [FIX] Retry now updates run state
+- [IMP] Export retry is no more TODO ! It exports in a new file, already extracted record, no new extraction
+
+""",
 
     'author': "lionel.deglise@e-cosi.com",
     'website': "http://www.e-cosi.com",
@@ -23,7 +37,7 @@
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Exchange',
-    'version': '1.2.0',
+    'version': '10.0.1.2.1',
     'licence': 'AGPL-3',
 
     # any module necessary for this one to work correctly
