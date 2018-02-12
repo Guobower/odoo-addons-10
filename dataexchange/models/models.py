@@ -98,7 +98,8 @@ class Importer(Adapter):
         data_to_integrate_ids = run.data_record_ids.filtered(
             lambda x: x.state != 'processed')
         if run.stream_id.filter_duplicates:
-            data_to_integrate_ids = self._filter_duplicates(run, data_to_integrate_ids)
+            data_to_integrate_ids = self._filter_duplicates(
+                run, data_to_integrate_ids)
         return self._integrate(run, data_to_integrate_ids)
 
     def _integrate(self, run, data_to_integrate_ids):
@@ -195,7 +196,8 @@ class Importer(Adapter):
             duplicate_id = self._check_duplicate(run, record)
             if duplicate_id:
                 duplicate_ids.append(duplicate_id)
-        deduplicated_data = [data for data in data_to_integrate_ids if data.id not in duplicate_ids]
+        deduplicated_data = [
+            data for data in data_to_integrate_ids if data.id not in duplicate_ids]
         # TODO: test this feature with a valid dataset
         return deduplicated_data
 
@@ -233,7 +235,7 @@ class StreamRun(models.Model):
          ("export_err", "Exportation échouée"),
          ("global_err", "Erreur générale"),
          ("param_err", "Erreur de paramétrage")
-        ], default="initiated", required=True)
+         ], default="initiated", required=True)
 
     start_date = fields.Datetime(
         required=True,
@@ -293,9 +295,15 @@ class StreamRun(models.Model):
     @api.one
     def retry(self, mode):
         if (self.stream_id.direction == 'in'):
-            self._retryImport(mode)
+            run_result = self._retryImport(mode)
         else:
-            self._retryExport(mode)
+            run_result = self._retryExport(mode)
+
+        if run_result:
+            self.end('integrated' if self.stream_id.direction ==
+                     'in' else 'exported')
+
+        return run_result
 
     def _retryImport(self, mode):
         if self.state != 'integrated':
@@ -320,8 +328,23 @@ class StreamRun(models.Model):
             return True
 
     def _retryExport(self, mode):
-        # TODO: export retry : what to do ?
-        return True
+        if self.state != 'processed':
+            exporter = self.stream_id._get_exporter()
+
+            if not exporter:
+                self.addLogError("No exporter found for code: %s" %
+                                 self.stream_id.adapter, RUN_ERR_ADAPTER_NOT_FOUND)
+                return False
+
+            self.retry_count += 1
+
+            exporter.prepare(self.env, self.stream_id)
+            if exporter.export(self):
+                self.addLogSuccess("Export retry #%i for %s succeded" % (
+                    self.retry_count, self.name))
+                return True
+        else:
+            return True
 
 
 class Stream(models.Model):
@@ -439,7 +462,7 @@ class Stream(models.Model):
 
     def _retry(self, mode):
         error_run_ids = self.run_ids.filtered(
-            lambda x: x.state != 'integrated' and x.retry_count <= self.max_run_retry)
+            lambda x: x.state not in ('integrated', 'exported') and x.retry_count <= self.max_run_retry)
 
         for run in error_run_ids:
             run.retry(mode)
@@ -486,6 +509,9 @@ class Stream(models.Model):
     def _get_importer(self):
         return _importers.get(self.adapter, None)
 
+    def _get_exporter(self):
+        return _exporters.get(self.adapter, None)
+
     def _runImport(self, run):
         importer = self._get_importer()
 
@@ -510,7 +536,7 @@ class Stream(models.Model):
         return False
 
     def _runExport(self, run):
-        exporter = _exporters.get(self.adapter, None)
+        exporter = self._get_exporter()
 
         if not exporter:
             _logger.error("No exporter found for code: %s", self.adapter)
