@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
-
-import logging
-import time
+import csv
 import datetime
-
-import sys
-import subprocess
+import json
+import logging
 import os
 import os.path
 import shutil
-import csv
+import subprocess
+import sys
+import time
 
+import requests
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 _importers = {}
@@ -178,7 +179,7 @@ class Importer(Adapter):
                         err_msg = "Duplicate entry {0} already treated in run {1}".format(
                             record.document_id, stream_run.name
                         )
-                        #self.addLogError(RUN_ERR_DUPLICATE_ENTRY, err_msg)
+                        # self.addLogError(RUN_ERR_DUPLICATE_ENTRY, err_msg)
                         _logger.error(err_msg)
                         return record.id
         return False
@@ -262,7 +263,39 @@ class StreamRun(models.Model):
     cr_ids = fields.One2many(
         "dataexchange.stream.cr", "run_id", string="Compte-rendus")
 
+    def _status_is_success(self, status):
+        return status in ('exported', 'integrated')
+
+    def _status_is_failure(self, status):
+        return not self._status_is_success(status)
+
+    def _send_webhook(self, webhook, method, payload, payload_type, status):
+        url = webhook.replace('{{run_name}}', self.name).replace(
+            '{{run_state}}', status).replace('{{run_data_count}}', str(len(self.data_record_ids)))
+
+        payload_str = payload.replace('{{run_name}}', self.name).replace(
+            '{{run_state}}', status).replace('{{run_data_count}}', str(len(self.data_record_ids)))
+
+        if (method == 'GET'):
+            requests.get(url, params=payload_str)
+        elif (method == 'POST'):
+            requests.post(url, data=payload_str.encode('utf-8'),
+                          headers={'Content-type': 'text/plain; charset=utf-8'})
+
     def end(self, status=None):
+        if (self._status_is_success(status) and self.stream_id.webhook_success):
+            self._send_webhook(self.stream_id.webhook_success,
+                               self.stream_id.webhook_success_method,
+                               self.stream_id.webhook_success_payload,
+                               self.stream_id.webhook_success_payload_type, status)
+
+        elif (self._status_is_failure(status) and self.stream_id.webhook_failure):
+            self._send_webhook(self.stream_id.webhook_failure,
+                               self.stream_id.webhook_failure_method,
+                               self.stream_id.webhook_failure_payload,
+                               self.stream_id.webhook_success_payload_type,
+                               status)
+
         self.end_date = datetime.datetime.now()
         if status:
             self.state = status
@@ -408,6 +441,26 @@ class Stream(models.Model):
     last_run_state = fields.Selection(string=u'Dernier statut',
                                       related="last_run_id.state",
                                       store=True)
+
+    webhook_success = fields.Char(size=200, string="URL")
+
+    webhook_success_payload = fields.Char(size=400, string="Payload succès")
+
+    webhook_success_payload_type = fields.Selection(
+        [('JSON', 'JSON'), ('DATA', 'DATA')], default='DATA', string="Payload type")
+
+    webhook_success_method = fields.Selection(
+        [('GET', 'GET'), ('POST', 'POST')], string="Methode", default='GET')
+
+    webhook_failure = fields.Char(size=200, string="URL")
+
+    webhook_failure_payload = fields.Char(size=400, string="Payload")
+
+    webhook_failure_payload_type = fields.Selection(
+        [('JSON', 'JSON'), ('DATA', 'DATA')], default='DATA', string="Payload type")
+
+    webhook_failure_method = fields.Selection(
+        [('GET', 'GET'), ('POST', 'POST')], string="Méthode", default='GET')
 
     basename = fields.Char(size=20, string="Nom racine",
                            required=True, default="Adapter")

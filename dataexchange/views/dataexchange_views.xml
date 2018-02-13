@@ -115,6 +115,20 @@
                                     <field name="archive_mask"/>
                                 </group>
                             </page>
+                            <page string="Webhook" groups="dataexchange.group_dataexchange_manager">
+                                <group string="Succès">
+                                    <field name="webhook_success"/>
+                                    <field name="webhook_success_method"/>
+                                    <field name="webhook_success_payload"/>
+                                    <field name="webhook_success_payload_type"/>
+                                </group>
+                                <group string="Echec">
+                                    <field name="webhook_failure"/>
+                                    <field name="webhook_failure_method"/>
+                                    <field name="webhook_failure_payload"/>
+                                    <field name="webhook_failure_payload_type"/>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>
