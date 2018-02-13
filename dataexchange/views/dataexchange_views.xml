@@ -16,21 +16,21 @@
                 </tree>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_tree">
             <field name="name">stream.tree</field>
             <field name="model">dataexchange.stream</field>
             <field name="arch" type="xml">
-                <tree string="Liste des flux disponibles">
+                <tree string="Liste des flux disponibles" decoration-success="last_run_state in ('integrated', 'exported')" decoration-danger="last_run_state in ('extract_err', 'load_err', 'integration_err', 'export_err', 'global_err', 'param_err')" decoration-warning="last_run_state == 'partial'">
                     <field name="name"/>
                     <field name="code" groups="dataexchange.group_dataexchange_manager"/>
                     <field name="direction"/>
                     <field name="endpoint"/>
                     <field name="description"/>
+                    <field name="last_run_date"/>
+                    <field name="last_run_state"/>
                 </tree>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_parameter_tree">
             <field name="name">stream.parameter.tree</field>
             <field name="model">dataexchange.stream.parameter</field>
@@ -41,7 +41,6 @@
                 </tree>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_data_tree">
             <field name="name">stream.data.tree</field>
             <field name="model">dataexchange.stream.data</field>
@@ -59,7 +58,6 @@
                 </tree>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_cr_tree">
             <field name="name">stream.cr.tree</field>
             <field name="model">dataexchange.stream.cr</field>
@@ -71,7 +69,6 @@
                 </tree>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_form">
             <field name="name">stream.form</field>
             <field name="model">dataexchange.stream</field>
@@ -123,7 +120,6 @@
                 </form>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_cr_form">
             <field name="name">stream.cr.form</field>
             <field name="model">dataexchange.stream.cr</field>
@@ -139,7 +135,6 @@
                 </form>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_data_form">
             <field name="name">stream.data.form</field>
             <field name="model">dataexchange.stream.data</field>
@@ -200,7 +195,6 @@
                 </form>
             </field>
         </record>
-
         <record model="ir.ui.view" id="view_stream_run_form">
             <field name="name">stream.run.form</field>
             <field name="model">dataexchange.stream.run</field>
@@ -230,18 +224,13 @@
                 </form>
             </field>
         </record>
-
         <!--        <act_window name="Exécuter" res_model="dataexchange.stream.run" src_model="dataexchange.stream" view_mode="form" target="new" key2="client_action_multi" id="act_dataexchange_stream_run" multi="True"/>
 -->
         <act_window id="act_dataexchange_stream_tree" name="Flux" res_model="dataexchange.stream" view_mode="tree,form" view_id="view_stream_tree"/>
         <act_window id="act_dataexchange_stream_run_tree" name="Exécutions" res_model="dataexchange.stream.run" view_mode="tree,form"/>
-
         <menuitem name="Echanges données" id="menu_dataexchange_root" groups="group_dataexchange_manager,group_dataexchange_user" web_icon="dataexchange,static/description/icon.png" sequence="100"/>
-
         <menuitem name="Fichiers" id="menu_dataexchange_file" parent="menu_dataexchange_root" sequence="1"/>
-
         <menuitem name="Flux" id="menu_dataexchange_streams" parent="menu_dataexchange_file" sequence="10" action="act_dataexchange_stream_tree"/>
         <menuitem name="Exécutions" id="menu_dataexchange_streams_run" parent="menu_dataexchange_file" sequence="20" action="act_dataexchange_stream_run_tree"/>
-
     </data>
 </odoo>

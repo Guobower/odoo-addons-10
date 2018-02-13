@@ -235,7 +235,7 @@ class StreamRun(models.Model):
          ("export_err", "Exportation échouée"),
          ("global_err", "Erreur générale"),
          ("param_err", "Erreur de paramétrage")
-         ], default="initiated", required=True)
+         ], default="initiated", required=True, string="Statut")
 
     start_date = fields.Datetime(
         required=True,
@@ -398,6 +398,17 @@ class Stream(models.Model):
         inverse_name="stream_id",
         string="Exécutions")
 
+    last_run_id = fields.Many2one(comodel_name="dataexchange.stream.run",
+                                  string="Dernière exécution")
+
+    last_run_date = fields.Datetime(string=u'Dernière exécution',
+                                    related="last_run_id.end_date",
+                                    store=True)
+
+    last_run_state = fields.Selection(string=u'Dernier statut',
+                                      related="last_run_id.state",
+                                      store=True)
+
     basename = fields.Char(size=20, string="Nom racine",
                            required=True, default="Adapter")
 
@@ -503,6 +514,8 @@ class Stream(models.Model):
                                                                     'retry_count': 1,
                                                                     'start_date': run_start_date,
                                                                     'stream_id': self.id})
+
+        self.last_run_id = requested_run
 
         return requested_run
 
