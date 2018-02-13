@@ -22,6 +22,10 @@ Suggestions & Feedback to: lionel.deglise@e-cosi.com
 
 Changelog
 =========
+v10.0.1.3.0
+-----------
+- [IMP] Last run execution with state (line is colored too ) and date directly from stream tree
+- [IMP] Webhook on run success and failure (ex: heartbeat.io, or Slack notification)
 
 v10.0.1.2.1
 -----------
@@ -30,14 +34,14 @@ v10.0.1.2.1
 
 """,
 
-    'author': "lionel.deglise@e-cosi.com",
+    'author': "odoo@e-cosi.com",
     'website': "http://www.e-cosi.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/master/openerp/addons/base/module/module_data.xml
     # for the full list
     'category': 'Exchange',
-    'version': '10.0.1.2.1',
+    'version': '10.0.1.3.0',
     'licence': 'AGPL-3',
 
     # any module necessary for this one to work correctly
