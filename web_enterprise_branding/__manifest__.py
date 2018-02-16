@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "SCAM branding",
+    'name': "Enterprise theme branding",
 
     'summary': """
-        Color and Background cutosmisation for SCAM Company""",
+        Color and Background cutomisation for any company""",
 
     'description': """
         Change color theme, app switcher background and footer logo.
