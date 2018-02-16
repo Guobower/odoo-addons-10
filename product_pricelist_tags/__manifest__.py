@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Product',
-    'version': '0.1.0',
+    'version': '11.0.1.0.0',
 
     # any module necessary for this one to work correctly
     'depends': ['product'],
