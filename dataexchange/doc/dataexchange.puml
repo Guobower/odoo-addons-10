@@ -1,0 +1,52 @@
+@startuml
+class StreamRun {
+  +Char[40] name
+  +Boolean active
+  +Integer retry_count
+  +Selection state
+  +Datetime start_date
+  +Datetime end_date
+  +Selection mode
+  +Integer total_record_count
+
+  +execute()
+  +retry()
+
+}
+
+class Stream {
+  +Char name
+  +Char code
+  +Text
+
+  + {static} run_by_code()
+  + retry_all()
+  + run_auto()
+  + run_manual()
+
+}
+
+class StreamParameter {
+  +Char code
+  +Char value
+}
+
+class StreamData {
+  +Char name
+}
+
+abstract class Adapter
+abstract class Importer
+abstract class Exporter
+
+Adapter <|-down- Importer
+Adapter <|-down- Exporter
+
+Stream "1" *-down- StreamRun : runs
+StreamRun "1" *-down- StreamData : datas
+StreamRun "0" *-down- StreamCR : log
+StreamData "0" *-right- StreamCR : log
+Stream "1" *-right- StreamParameter : parameters
+Adapter "1" *- Stream
+
+@enduml
