@@ -19,19 +19,21 @@ def db_filter(dbs, httprequest=None):
     db_filter_hdr_after = httprequest.environ.get('HTTP_X_ODOO_DBFILTER_AFTER')
     db_filter_hdr_only = httprequest.environ.get('HTTP_X_ODOO_DBFILTER_ONLY')
 
-    if db_filter_hdr_only:
+    def is_defined(s):
+        return bool(s and s.strip())
+
+    if is_defined(db_filter_hdr_only):
         dbs = [db for db in dbs if re.match(db_filter_hdr_only, db)]
         _logger.debug('Header DB Filter only : %s', db_filter_hdr_only)
-    elif db_filter_hdr_before:
+    elif is_defined(db_filter_hdr_before):
         dbs = [db for db in dbs if re.match(db_filter_hdr_before, db)]
         dbs = db_filter_org(dbs, httprequest)
         _logger.debug('Header DB Filter before : %s', db_filter_hdr_before)
-    elif db_filter_hdr_after:
+    elif is_defined(db_filter_hdr_after):
         dbs = db_filter_org(dbs, httprequest)
         dbs = [db for db in dbs if re.match(db_filter_hdr_after, db)]
         _logger.debug('Header DB Filter after : %s', db_filter_hdr_after)
-
-    if not dbs:
+    else:
         dbs = db_filter_org(dbs, httprequest)
 
     return dbs
