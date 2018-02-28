@@ -10,6 +10,7 @@ This repository contains a collection of Odoo modules.
 | **dataexchange** | 11.0 | base module to manage file import/export with logging et retry on fail features. Extensibility based on abstract adapters |
 | **web_enterprise_branding** | 11.0 | module to change backend  theme elements for custom branding, it applies for Enterprise version |
 | **product_pricelist_tags** | 11.0 | module to add category tags on price list
+| **db_from_header** | 11.0 | module to select database from http header |
 
 ## web_enterprise_branding
 
