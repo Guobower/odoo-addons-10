@@ -16,4 +16,4 @@ Models
 Requirements
 ------------
 
-* Odoo 10.0 CE
+* Odoo 11.0 CE
