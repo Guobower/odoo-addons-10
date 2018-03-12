@@ -270,11 +270,15 @@ class StreamRun(models.Model):
         return not self._status_is_success(status)
 
     def _send_webhook(self, webhook, method, payload, payload_type, status):
-        url = webhook.replace('{{run_name}}', self.name).replace(
-            '{{run_state}}', status).replace('{{run_data_count}}', str(len(self.data_record_ids)))
+        def _param_replace(orig):
+            return orig.replace(
+                '{{run_name}}', self.name).replace(
+                '{{run_state}}', status).replace(
+                '{{run_data_count}}', str(len(self.data_record_ids))).replace(
+                '{{db_name}}', self.env.cr.dbname)
 
-        payload_str = payload.replace('{{run_name}}', self.name).replace(
-            '{{run_state}}', status).replace('{{run_data_count}}', str(len(self.data_record_ids)))
+        url = _param_replace(webhook)
+        payload_str = _param_replace(payload)
 
         if (method == 'GET'):
             requests.get(url, params=payload_str)
