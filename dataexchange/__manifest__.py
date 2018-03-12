@@ -22,6 +22,10 @@ Suggestions & Feedback to: lionel.deglise@e-cosi.com
 
 Changelog
 =========
+v11.0.1.3.1
+-----------
+- [IMP] Add {{db_name}} param in webhook url and payload
+
 v11.0.1.3.0
 -----------
 - [IMP] Updated to 11.0, nothing to do except metas
