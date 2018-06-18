@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="help_menu.url_action" model="ir.actions.act_url">
+            <field name="name">help.url.action</field>
+            <field name="url">https://www.odoo.com/documentation/user/11.0/</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

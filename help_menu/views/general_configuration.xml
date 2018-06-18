@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="help_menu.view_configuration" model="ir.ui.view">
+            <field name="name">help_menu.config.view</field>
+            <field name="model">help_menu.settings</field>
+            <field name="arch" type="xml">
+                <form string="Help Menu Settings" class="oe_form_configuration">
+                <header>
+                    <button string="Apply" type="object" name="execute" class="oe_highlight"/>
+                    <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                </header>
+                    <group string="Help Menu Configuration">
+                        <label for="help_url"/>
+                        <div>
+                            <field name="help_url" widget="url" class="oe_left"/>
+                        </div>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="help_menu.settings_action" model="ir.actions.act_window">
+            <field name="name">help_menu.settings</field>
+            <field name="res_model">help_menu.settings</field>
+            <field name="view_id" ref="help_menu.view_configuration"/>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <menuitem id="help_menu.settings_menu" name="Help Menu Configuration" parent="base.menu_administration"
+                  action="help_menu.settings_action" sequence="2"/>
+    </data>
+</odoo>
