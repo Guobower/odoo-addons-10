@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="help_menu.view_configuration" model="ir.ui.view">
-            <field name="name">help_menu.onfig.view</field>
+            <field name="name">help_menu.config.view</field>
             <field name="model">help_menu.settings</field>
             <field name="arch" type="xml">
                 <form string="Help Menu Settings" class="oe_form_configuration">

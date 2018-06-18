@@ -4,11 +4,16 @@ odoo.define('help_menu.UserMenu', function (require) {
     var UserMenu = require('web.UserMenu');
 
     UserMenu.include({
-        on_menu_help: function () {
+        _onMenuHelp: function () {
             var self = this;
 
             // Retrieves the action and executes it
-            self.rpc("/web/action/load", {action_id: "help_menu.url_action"}).then(function (action) {
+            self._rpc({
+                route: "/web/action/load",
+                params: {
+                    action_id: "help_menu.url_action"
+                }
+            }).then(function (action) {
                 return self.do_action(action);
             });
         },
