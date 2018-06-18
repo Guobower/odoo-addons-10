@@ -11,7 +11,7 @@ This repository contains a collection of Odoo modules.
 | **web_enterprise_branding** | 11.0 | module to change backend  theme elements for custom branding, it applies for Enterprise version |
 | **product_pricelist_tags** | 11.0 | module to add category tags on price list
 | **db_from_header** | 11.0 | module to select database from http header |
-| **help_menu** | 11.0 ||
+| **help_menu** | 11.0 | module to add a link into the top right menu (user menu), named 'online help' |
 
 ## web_enterprise_branding
 
